@@ -20,6 +20,7 @@ int Loop::Run()
     if (!this->Initialise()) {
         return -1;
     }
+    this->mode->Initialise();
     this->running = true;
     SDL_Event event;
     while (this->running) {
@@ -30,6 +31,7 @@ int Loop::Run()
         this->Render();
         this->SwitchModes();
     }
+    this->mode->Destroy();
     this->Destroy();
     return 0;
 }
