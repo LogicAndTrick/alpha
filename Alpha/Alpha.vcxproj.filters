@@ -20,6 +20,9 @@
     <Filter Include="gl">
       <UniqueIdentifier>{12247506-67d1-4f2a-8541-fffe0059ef02}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{800fdf02-6acf-496e-9172-37d86c2fa38f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -736,6 +739,12 @@
     </None>
     <None Include="glm\gtx\wrap.inl">
       <Filter>glm</Filter>
+    </None>
+    <None Include="..\shaders\default.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders\default.vert">
+      <Filter>shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

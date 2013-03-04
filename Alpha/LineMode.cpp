@@ -20,10 +20,15 @@ void LineMode::Initialise()
     glEnable(GL_BLEND);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    this->defaultVertShader = shaderLoadFromFile("shaders/default.vert", GL_VERTEX_SHADER);
+    this->defaultFragShader = shaderLoadFromFile("shaders/default.frag", GL_FRAGMENT_SHADER);
 }
 
 void LineMode::Destroy()
 {
+    glDeleteShader(this->defaultVertShader);
+    glDeleteShader(this->defaultFragShader);
 }
 
 void LineMode::Update()

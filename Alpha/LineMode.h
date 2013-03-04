@@ -23,5 +23,8 @@ public:
 private:
     std::list<glm::vec2> *points;
     static const int MAX_POINTS = 50;
+    
+    GLuint defaultVertShader;
+    GLuint defaultFragShader;
 };
 

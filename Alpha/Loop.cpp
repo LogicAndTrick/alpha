@@ -57,6 +57,8 @@ bool Loop::Initialise()
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
+    glewInit();
+
     glClearColor(0, 0, 0, 0);
 
     glViewport(0, 0, 640, 480);

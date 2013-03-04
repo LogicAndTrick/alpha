@@ -53,7 +53,9 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(MSBuildProjectDirectory)\..\SDL.dll" "$(OutDir)\SDL.dll"</Command>
+      <Command>copy "$(MSBuildProjectDirectory)\..\SDL.dll" "$(OutDir)\SDL.dll"
+mkdir "$(OutDir)\shaders\"
+copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -210,6 +212,8 @@
     <ClInclude Include="shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\shaders\default.frag" />
+    <None Include="..\shaders\default.vert" />
     <None Include="glm\core\func_common.inl" />
     <None Include="glm\core\func_exponential.inl" />
     <None Include="glm\core\func_geometric.inl" />

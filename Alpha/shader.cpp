@@ -43,3 +43,23 @@ GLuint shaderLoadFromFile(const char* filename, GLenum shaderType) {
 
 	return shader;
 }
+
+
+GLuint createProgramFromShaders(GLuint vert, GLuint frag) {
+	GLint status;
+	GLuint prog = glCreateProgram();
+
+	glAttachShader(prog, vert);
+	glAttachShader(prog, frag);
+
+	glLinkProgram(prog);
+	glGetProgramiv(prog, GL_LINK_STATUS, &status);
+	if (status != GL_TRUE) {
+		cerr << "Failed to link shaders: " << endl;
+		GLchar log[10000];
+		glGetProgramInfoLog(prog, 10000, NULL, log);
+		cerr << log << endl;
+	}
+
+	return prog;
+}
