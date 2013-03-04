@@ -71,9 +71,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GameMode.cpp" />
+    <ClCompile Include="gl\glew.c" />
     <ClCompile Include="LineMode.cpp" />
     <ClCompile Include="Loop.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameMode.h" />
@@ -199,12 +201,13 @@
     <ClInclude Include="glm\gtx\verbose_operator.hpp" />
     <ClInclude Include="glm\gtx\wrap.hpp" />
     <ClInclude Include="glm\virtrev\xstream.hpp" />
+    <ClInclude Include="gl\glew.h" />
+    <ClInclude Include="gl\glxew.h" />
+    <ClInclude Include="gl\wglew.h" />
     <ClInclude Include="LineMode.h" />
     <ClInclude Include="Loop.h" />
     <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Alpha.rc" />
+    <ClInclude Include="shader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="glm\core\func_common.inl" />

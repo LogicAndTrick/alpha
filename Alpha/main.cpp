@@ -1,12 +1,6 @@
-#ifdef __cplusplus
-    #include <cstdlib>
-#else
-    #include <stdlib.h>
-#endif
 
-#include <windows.h>
-#include <gl/gl.h>
-#include <gl/glu.h>
+#include <cstdlib>
+#include "gl/glew.h"
 #include <SDL.h>
 
 #include "Loop.h"

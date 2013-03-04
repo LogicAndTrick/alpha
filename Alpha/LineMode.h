@@ -2,6 +2,8 @@
 
 #include <list>
 #include "glm/glm.hpp"
+#include "gl/glew.h"
+#include "shader.h"
 #include "gamemode.h"
 
 class LineMode : public GameMode

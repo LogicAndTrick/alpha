@@ -1,5 +1,4 @@
-#ifndef LOOP_H
-#define LOOP_H
+#pragma once
 
 #include <SDL.h>
 
@@ -31,5 +30,3 @@ class Loop
         GameMode *mode;
         GameMode *switchMode;
 };
-
-#endif // LOOP_H

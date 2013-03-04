@@ -1,6 +1,4 @@
-#include <windows.h>
-#include <gl/gl.h>
-#include <gl/glu.h>
+#include "gl/glew.h"
 
 #include "Loop.h"
 

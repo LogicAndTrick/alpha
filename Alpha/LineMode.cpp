@@ -1,6 +1,3 @@
-#include <windows.h>
-#include <gl/gl.h>
-#include <cstdlib>
 
 #include "LineMode.h"
 
@@ -19,6 +16,10 @@ LineMode::~LineMode(void)
 void LineMode::Initialise()
 {
     glLineWidth(4);
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_BLEND);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void LineMode::Destroy()
@@ -37,8 +38,8 @@ void LineMode::Render()
     bool first = true;
     for (std::list<glm::vec2>::iterator it = this->points->begin(); it != this->points->end(); ++it) {
         if (!first) {
-            glVertex2i(b.x, b.y);
-            glVertex2i(it->x, it->y);
+            glVertex2f(b.x, b.y);
+            glVertex2f(it->x, it->y);
         }
         first = false;
         b.x = it->x;

@@ -9,10 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="glm">
       <UniqueIdentifier>{1e129786-d0a1-4a17-ad2d-cf992607ba48}</UniqueIdentifier>
       <Extensions>
@@ -20,6 +16,9 @@
     </Filter>
     <Filter Include="LineMode">
       <UniqueIdentifier>{abaf2638-aaf1-4b3b-9009-af7492bb814f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gl">
+      <UniqueIdentifier>{12247506-67d1-4f2a-8541-fffe0059ef02}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,6 +33,12 @@
     </ClCompile>
     <ClCompile Include="LineMode.cpp">
       <Filter>LineMode</Filter>
+    </ClCompile>
+    <ClCompile Include="shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gl\glew.c">
+      <Filter>gl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -415,11 +420,18 @@
     <ClInclude Include="LineMode.h">
       <Filter>LineMode</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Alpha.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
+    <ClInclude Include="shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gl\glew.h">
+      <Filter>gl</Filter>
+    </ClInclude>
+    <ClInclude Include="gl\glxew.h">
+      <Filter>gl</Filter>
+    </ClInclude>
+    <ClInclude Include="gl\wglew.h">
+      <Filter>gl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="glm\gtx\associated_min_max.inl">

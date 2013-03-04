@@ -1,5 +1,4 @@
-#ifndef GAMEMODE_H
-#define GAMEMODE_H
+#pragma once
 
 #include <SDL.h>
 
@@ -48,5 +47,3 @@ public:
  
     virtual void OnUser(Uint8 type, int code, void* data1, void* data2);
 };
-
-#endif
