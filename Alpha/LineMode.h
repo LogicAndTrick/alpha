@@ -27,5 +27,9 @@ private:
     GLuint defaultVertShader;
     GLuint defaultFragShader;
     GLuint defaultProgram;
+
+    GLuint arrayBuffer;
+    GLuint elementBuffer;
+    GLuint vertexArray;
 };
 

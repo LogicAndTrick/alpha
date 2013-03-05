@@ -30,6 +30,17 @@ void LineMode::Initialise()
     this->defaultVertShader = shader::LoadFromFile(defaultVert, GL_VERTEX_SHADER);
     this->defaultFragShader = shader::LoadFromFile(defaultFrag, GL_FRAGMENT_SHADER);
     this->defaultProgram = shader::CreateProgram(this->defaultVertShader, this->defaultFragShader);
+    
+    glGenBuffers(1, &this->arrayBuffer);
+    glGenBuffers(1, &this->elementBuffer);
+    glGenVertexArrays(1, &this->vertexArray);
+
+    glBindVertexArray(this->vertexArray);
+    glBindBuffer(GL_ARRAY_BUFFER, this->arrayBuffer);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, 0, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elementBuffer);
+    glBindVertexArray(0);
 }
 
 void LineMode::Destroy()
