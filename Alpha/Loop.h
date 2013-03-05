@@ -29,4 +29,5 @@ class Loop
         SDL_Surface *display;
         GameMode *mode;
         GameMode *switchMode;
+        frame currentFrame;
 };

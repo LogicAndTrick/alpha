@@ -1,4 +1,5 @@
 
+#include "globals.h"
 #include "LineMode.h"
 
 
@@ -21,12 +22,19 @@ void LineMode::Initialise()
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-    this->defaultVertShader = shaderLoadFromFile("shaders/default.vert", GL_VERTEX_SHADER);
-    this->defaultFragShader = shaderLoadFromFile("shaders/default.frag", GL_FRAGMENT_SHADER);
+    char defaultVert[256] = "";
+    char defaultFrag[256] = "";
+    globals::ResolvePath("shaders/default.vert", defaultVert);
+    globals::ResolvePath("shaders/default.frag", defaultFrag);
+    
+    this->defaultVertShader = shader::LoadFromFile(defaultVert, GL_VERTEX_SHADER);
+    this->defaultFragShader = shader::LoadFromFile(defaultFrag, GL_FRAGMENT_SHADER);
+    this->defaultProgram = shader::CreateProgram(this->defaultVertShader, this->defaultFragShader);
 }
 
 void LineMode::Destroy()
 {
+    glDeleteProgram(this->defaultProgram);
     glDeleteShader(this->defaultVertShader);
     glDeleteShader(this->defaultFragShader);
 }

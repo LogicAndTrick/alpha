@@ -6,60 +6,63 @@
 
 using namespace std;
 
-GLuint shaderLoadFromFile(const char* filename, GLenum shaderType) {
-	ifstream file(filename);
-	if (!file) {
-		cerr << "Unable to open file: " << filename << endl;
-		return 0;
-	}
+namespace shader {
 
-	char line[256];
-	string source;
+    GLuint LoadFromFile(const char* filename, GLenum shaderType) {
+	    ifstream file(filename);
+	    if (!file) {
+		    cerr << "Unable to open file: " << filename << endl;
+		    return 0;
+	    }
 
-	while (file) {
-		file.getline(line, 256);
-		source += line;
-		source += '\n';
-	}
+	    char line[256];
+	    string source;
 
-    if (!file.eof()) {
-    	cerr << "Error reading the file: " << filename << endl;
-    	return 0;
+	    while (file) {
+		    file.getline(line, 256);
+		    source += line;
+		    source += '\n';
+	    }
+
+        if (!file.eof()) {
+    	    cerr << "Error reading the file: " << filename << endl;
+    	    return 0;
+        }
+        GLuint shader = glCreateShader(shaderType);
+        const char *cstr = source.c_str();
+	    glShaderSource(shader, 1, (const GLchar**)&cstr, NULL);
+	    glCompileShader(shader);
+
+	    GLint status;
+	    glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+	    if (status != GL_TRUE) {
+		    cerr << "Failed to compile shader: " << filename << endl;
+		    GLchar log[10000];
+		    glGetShaderInfoLog(shader, 10000, NULL, log);
+		    cerr << log << endl;
+		    exit(1);
+	    }
+
+	    return shader;
     }
 
-    GLuint shader = glCreateShader(shaderType);
-	glShaderSource(shader, 1, (const GLchar**)&source, NULL);
-	glCompileShader(shader);
 
-	GLint status;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-	if (status != GL_TRUE) {
-		cerr << "Failed to compile shader: " << filename << endl;
-		GLchar log[10000];
-		glGetShaderInfoLog(shader, 10000, NULL, log);
-		cerr << log << endl;
-		exit(1);
-	}
+    GLuint CreateProgram(GLuint vert, GLuint frag) {
+	    GLint status;
+	    GLuint prog = glCreateProgram();
 
-	return shader;
-}
+	    glAttachShader(prog, vert);
+	    glAttachShader(prog, frag);
 
+	    glLinkProgram(prog);
+	    glGetProgramiv(prog, GL_LINK_STATUS, &status);
+	    if (status != GL_TRUE) {
+		    cerr << "Failed to link shaders: " << endl;
+		    GLchar log[10000];
+		    glGetProgramInfoLog(prog, 10000, NULL, log);
+		    cerr << log << endl;
+	    }
 
-GLuint createProgramFromShaders(GLuint vert, GLuint frag) {
-	GLint status;
-	GLuint prog = glCreateProgram();
-
-	glAttachShader(prog, vert);
-	glAttachShader(prog, frag);
-
-	glLinkProgram(prog);
-	glGetProgramiv(prog, GL_LINK_STATUS, &status);
-	if (status != GL_TRUE) {
-		cerr << "Failed to link shaders: " << endl;
-		GLchar log[10000];
-		glGetProgramInfoLog(prog, 10000, NULL, log);
-		cerr << log << endl;
-	}
-
-	return prog;
+	    return prog;
+    }
 }

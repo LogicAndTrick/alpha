@@ -2,6 +2,11 @@
 
 #include "gl/glew.h"
 
-GLuint shaderLoadFromFile(const char* filename, GLenum shaderType);
 
-GLuint createProgramFromShaders(GLuint vert, GLuint frag);
+namespace shader {
+
+    GLuint LoadFromFile(const char* filename, GLenum shaderType);
+
+    GLuint CreateProgram(GLuint vert, GLuint frag);
+
+}

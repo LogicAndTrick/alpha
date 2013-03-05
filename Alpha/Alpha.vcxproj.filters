@@ -43,6 +43,9 @@
     <ClCompile Include="gl\glew.c">
       <Filter>gl</Filter>
     </ClCompile>
+    <ClCompile Include="globals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Loop.h">
@@ -434,6 +437,9 @@
     </ClInclude>
     <ClInclude Include="gl\wglew.h">
       <Filter>gl</Filter>
+    </ClInclude>
+    <ClInclude Include="globals.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

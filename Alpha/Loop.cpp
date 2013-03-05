@@ -74,6 +74,10 @@ bool Loop::Initialise()
 
     glLoadIdentity();
 
+    this->currentFrame.duration = 10;
+    this->currentFrame.frame = 0;
+    this->currentFrame.tick = 
+
     return true;
 }
 

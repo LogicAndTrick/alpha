@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL.h>
+#include "Loop.h"
 
 enum Buttons {
     Left = SDL_BUTTON_LEFT,
@@ -46,4 +47,6 @@ public:
     virtual void OnExit();
  
     virtual void OnUser(Uint8 type, int code, void* data1, void* data2);
+protected:
+    frame currentFrame;
 };

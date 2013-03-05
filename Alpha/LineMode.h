@@ -26,5 +26,6 @@ private:
     
     GLuint defaultVertShader;
     GLuint defaultFragShader;
+    GLuint defaultProgram;
 };
 

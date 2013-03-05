@@ -73,6 +73,7 @@ copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GameMode.cpp" />
+    <ClCompile Include="globals.cpp" />
     <ClCompile Include="gl\glew.c" />
     <ClCompile Include="LineMode.cpp" />
     <ClCompile Include="Loop.cpp" />
@@ -203,6 +204,7 @@ copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\"</Command>
     <ClInclude Include="glm\gtx\verbose_operator.hpp" />
     <ClInclude Include="glm\gtx\wrap.hpp" />
     <ClInclude Include="glm\virtrev\xstream.hpp" />
+    <ClInclude Include="globals.h" />
     <ClInclude Include="gl\glew.h" />
     <ClInclude Include="gl\glxew.h" />
     <ClInclude Include="gl\wglew.h" />
