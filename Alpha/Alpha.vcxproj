@@ -37,10 +37,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>D:\Dev\cpp\SDL_VC\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\SDL_VC\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>D:\Dev\cpp\SDL_VC\lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)..\SDL_VC\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -81,6 +81,7 @@ copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\"</Command>
     <ClCompile Include="shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common.h" />
     <ClInclude Include="GameMode.h" />
     <ClInclude Include="glm\core\func_common.hpp" />
     <ClInclude Include="glm\core\func_exponential.hpp" />

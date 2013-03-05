@@ -76,7 +76,7 @@ bool Loop::Initialise()
 
     this->currentFrame.duration = 10;
     this->currentFrame.frame = 0;
-    this->currentFrame.tick = 
+    //this->currentFrame.tick = 
 
     return true;
 }

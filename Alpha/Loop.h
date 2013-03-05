@@ -1,14 +1,8 @@
 #pragma once
 
 #include <SDL.h>
-
+#include "common.h"
 #include "GameMode.h"
-
-typedef struct {
-    long frame;
-    long tick;
-    long duration;
-} frame;
 
 class Loop
 {

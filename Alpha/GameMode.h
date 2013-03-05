@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SDL.h>
-#include "Loop.h"
+#include "common.h"
 
 enum Buttons {
     Left = SDL_BUTTON_LEFT,

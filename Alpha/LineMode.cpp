@@ -45,6 +45,10 @@ void LineMode::Initialise()
 
 void LineMode::Destroy()
 {
+    glDeleteVertexArrays(1, &this->vertexArray);
+    glDeleteBuffers(1, &this->arrayBuffer);
+    glDeleteBuffers(1, &this->elementBuffer);
+
     glDeleteProgram(this->defaultProgram);
     glDeleteShader(this->defaultVertShader);
     glDeleteShader(this->defaultFragShader);
