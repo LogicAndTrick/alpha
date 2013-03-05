@@ -31,5 +31,7 @@ private:
     GLuint arrayBuffer;
     GLuint elementBuffer;
     GLuint vertexArray;
+
+    GLuint uniformViewport;
 };
 

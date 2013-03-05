@@ -55,7 +55,7 @@
     <PostBuildEvent>
       <Command>copy "$(MSBuildProjectDirectory)\..\SDL.dll" "$(OutDir)\SDL.dll"
 mkdir "$(OutDir)\shaders\"
-copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\"</Command>
+copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\" /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

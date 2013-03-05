@@ -1,4 +1,6 @@
 
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "globals.h"
 #include "LineMode.h"
 
@@ -30,17 +32,38 @@ void LineMode::Initialise()
     this->defaultVertShader = shader::LoadFromFile(defaultVert, GL_VERTEX_SHADER);
     this->defaultFragShader = shader::LoadFromFile(defaultFrag, GL_FRAGMENT_SHADER);
     this->defaultProgram = shader::CreateProgram(this->defaultVertShader, this->defaultFragShader);
+
+    this->uniformViewport = glGetUniformLocation(this->defaultProgram, "viewport");
+    glm::mat4 ortho = glm::ortho<float>(0, 640, 480, 0);
+
+    glUseProgram(this->defaultProgram);
+    glUniformMatrix4fv(this->uniformViewport, 1, GL_FALSE, &ortho[0][0]);
+    glUseProgram(0);
     
     glGenBuffers(1, &this->arrayBuffer);
     glGenBuffers(1, &this->elementBuffer);
     glGenVertexArrays(1, &this->vertexArray);
 
     glBindVertexArray(this->vertexArray);
-    glBindBuffer(GL_ARRAY_BUFFER, this->arrayBuffer);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, 0, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elementBuffer);
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, this->arrayBuffer);
+        {
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, 0);
+            glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, (GLvoid*) (sizeof(float) * 2));
+            GLfloat data[] = { 0, 0, 1, 20, 20, 0.5, 20, 50, 0.2 };
+            glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 9, data, GL_STATIC_DRAW); 
+        }
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elementBuffer);
+        {
+            GLuint data[] = {0, 1, 1, 2};
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * 4, data, GL_STATIC_DRAW);
+        }
+    }
     glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void LineMode::Destroy()
@@ -60,6 +83,18 @@ void LineMode::Update()
 
 void LineMode::Render()
 {
+    glUseProgram(this->defaultProgram);
+    {
+        glBindVertexArray(this->vertexArray);
+        {
+            glDrawElements(GL_LINES, 4, GL_UNSIGNED_INT, 0);
+        }
+        glBindVertexArray(0);
+    }
+    glUseProgram(0);
+
+    GLenum err = glGetError();
+
     glColor3f(1.0, 1.0, 1.0);
     glBegin(GL_LINES);
     glm::vec2 b;
@@ -80,6 +115,7 @@ void LineMode::OnMouseMove(int x, int y, int deltaX, int deltaY)
 {
     this->points->push_front(glm::vec2(x, y));
     if (this->points->size() > LineMode::MAX_POINTS) this->points->pop_back();
+    printf("%d %d\r\n", x, y);
 }
 
 void LineMode::OnResize(int w, int h)
