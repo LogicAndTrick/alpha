@@ -54,14 +54,8 @@ void LineMode::Initialise()
             glEnableVertexAttribArray(1);
             glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, 0);
             glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, (GLvoid*) (sizeof(float) * 2));
-            //GLfloat data[] = { 0, 0, 1, 20, 20, 0.5, 20, 50, 0.2 };
-            //glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 9, data, GL_STATIC_DRAW); 
         }
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elementBuffer);
-        {
-            //GLuint data[] = {0, 1, 1, 2};
-            //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * 4, data, GL_STATIC_DRAW);
-        }
     }
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
