@@ -217,6 +217,8 @@ copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\" /Y</Command>
   <ItemGroup>
     <None Include="..\shaders\default.frag" />
     <None Include="..\shaders\default.vert" />
+    <None Include="..\shaders\gaussian_hor.frag" />
+    <None Include="..\shaders\gaussian_vert.frag" />
     <None Include="glm\core\func_common.inl" />
     <None Include="glm\core\func_exponential.inl" />
     <None Include="glm\core\func_geometric.inl" />
