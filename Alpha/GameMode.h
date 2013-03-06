@@ -47,6 +47,8 @@ public:
     virtual void OnExit();
  
     virtual void OnUser(Uint8 type, int code, void* data1, void* data2);
+
+    void SetFrame(frame f);
 protected:
     frame currentFrame;
 };

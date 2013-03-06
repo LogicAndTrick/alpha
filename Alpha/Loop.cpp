@@ -76,7 +76,7 @@ bool Loop::Initialise()
 
     this->currentFrame.duration = 10;
     this->currentFrame.frame = 0;
-    //this->currentFrame.tick = 
+    this->currentFrame.tick = SDL_GetTicks();
 
     return true;
 }
@@ -152,6 +152,12 @@ void Loop::ProcessEvent(SDL_Event* event)
 
 void Loop::Update()
 {
+    Uint32 tick = SDL_GetTicks();
+    this->currentFrame.duration = tick - this->currentFrame.tick;
+    this->currentFrame.tick = tick;
+    this->currentFrame.frame++;
+
+    this->mode->SetFrame(this->currentFrame);
     this->mode->Update();
 }
 

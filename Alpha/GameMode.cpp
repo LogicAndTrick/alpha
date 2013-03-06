@@ -91,3 +91,6 @@ void GameMode::OnUser(Uint8 type, int code, void* data1, void* data2) {
     // Virtual
 }
 
+void GameMode::SetFrame(frame f) {
+    this->currentFrame = f;
+}
