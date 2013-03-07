@@ -15,6 +15,7 @@ namespace globals {
 
     void ResolvePath(const char *relative, char *str) {
         if (relative[0] == '/' || relative[0] == '\\') relative++;
+        str[0] = 0;
         strcat(str, BaseDirectory);
         strcat(str, relative);
     }

@@ -57,6 +57,9 @@
 mkdir "$(OutDir)\shaders\"
 copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\" /Y</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>del "$(OutDir)\shaders\" /Q</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -215,10 +218,12 @@ copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\" /Y</Command>
     <ClInclude Include="shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\shaders\default.frag" />
-    <None Include="..\shaders\default.vert" />
+    <None Include="..\shaders\line.frag" />
+    <None Include="..\shaders\line.vert" />
     <None Include="..\shaders\gaussian_hor.frag" />
     <None Include="..\shaders\gaussian_vert.frag" />
+    <None Include="..\shaders\passthrough.frag" />
+    <None Include="..\shaders\passthrough.vert" />
     <None Include="glm\core\func_common.inl" />
     <None Include="glm\core\func_exponential.inl" />
     <None Include="glm\core\func_geometric.inl" />

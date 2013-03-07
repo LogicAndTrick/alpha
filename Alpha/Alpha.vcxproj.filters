@@ -749,16 +749,22 @@
     <None Include="glm\gtx\wrap.inl">
       <Filter>glm</Filter>
     </None>
-    <None Include="..\shaders\default.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\shaders\default.vert">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="..\shaders\gaussian_hor.frag">
       <Filter>shaders</Filter>
     </None>
     <None Include="..\shaders\gaussian_vert.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders\line.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders\line.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders\passthrough.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders\passthrough.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

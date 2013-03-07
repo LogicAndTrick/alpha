@@ -24,15 +24,25 @@ private:
     std::list<glm::vec3> *points;
     static const int MAX_POINTS = 50;
     
-    GLuint defaultVertShader;
-    GLuint defaultFragShader;
-    GLuint defaultProgram;
-
-    GLuint arrayBuffer;
-    GLuint elementBuffer;
-    GLuint vertexArray;
+    GLuint lineVertShader;
+    GLuint lineFragShader;
+    GLuint passthroughVertShader;
+    GLuint passthroughFragShader;
+    GLuint gaussianVFragShader;
+    GLuint gaussianHFragShader;
     
-    GLuint uniformViewport;
-    GLuint uniformTime;
+    GLuint lineProgram;
+    GLuint passthroughProgram;
+    GLuint gaussianVProgram;
+    GLuint gaussianHProgram;
+
+    GLuint lineArrayBuffer;
+    GLuint lineElementBuffer;
+    GLuint lineVertexArray;
+
+    GLuint passthroughBuffer;
+    
+    GLuint uniformLineViewport;
+    GLuint uniformLineTime;
 };
 

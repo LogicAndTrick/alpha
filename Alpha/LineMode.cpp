@@ -19,58 +19,94 @@ LineMode::~LineMode(void)
 
 void LineMode::Initialise()
 {
+    glClearColor(0, 0, 0, 0);
     glLineWidth(4);
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_BLEND);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-    char defaultVert[256] = "";
-    char defaultFrag[256] = "";
-    globals::ResolvePath("shaders/default.vert", defaultVert);
-    globals::ResolvePath("shaders/default.frag", defaultFrag);
+    char path[260] = "";
+
+    globals::ResolvePath("shaders/line.vert", path);
+    this->lineVertShader = shader::LoadFromFile(path, GL_VERTEX_SHADER);
+
+    globals::ResolvePath("shaders/line.frag", path);
+    this->lineFragShader = shader::LoadFromFile(path, GL_FRAGMENT_SHADER);
+
+    globals::ResolvePath("shaders/passthrough.vert", path);
+    this->passthroughVertShader = shader::LoadFromFile(path, GL_VERTEX_SHADER);
+
+    globals::ResolvePath("shaders/passthrough.frag", path);
+    this->passthroughFragShader = shader::LoadFromFile(path, GL_FRAGMENT_SHADER);
+
+    globals::ResolvePath("shaders/gaussian_hor.frag", path);
+    this->gaussianHFragShader = shader::LoadFromFile(path, GL_FRAGMENT_SHADER);
+
+    globals::ResolvePath("shaders/gaussian_vert.frag", path);
+    this->gaussianVFragShader = shader::LoadFromFile(path, GL_FRAGMENT_SHADER);
     
-    this->defaultVertShader = shader::LoadFromFile(defaultVert, GL_VERTEX_SHADER);
-    this->defaultFragShader = shader::LoadFromFile(defaultFrag, GL_FRAGMENT_SHADER);
-    this->defaultProgram = shader::CreateProgram(this->defaultVertShader, this->defaultFragShader);
+    this->lineProgram = shader::CreateProgram(this->lineVertShader, this->lineFragShader);
+    this->passthroughProgram = shader::CreateProgram(this->passthroughVertShader, this->passthroughFragShader);
+    this->gaussianHProgram = shader::CreateProgram(this->passthroughVertShader, this->gaussianHFragShader);
+    this->gaussianVProgram = shader::CreateProgram(this->passthroughVertShader, this->gaussianVFragShader);
     
-    this->uniformViewport = glGetUniformLocation(this->defaultProgram, "viewport");
-    this->uniformTime = glGetUniformLocation(this->defaultProgram, "time");
+    this->uniformLineViewport = glGetUniformLocation(this->lineProgram, "viewport");
+    this->uniformLineTime = glGetUniformLocation(this->lineProgram, "time");
     glm::mat4 ortho = glm::ortho<float>(0, 640, 480, 0);
 
-    glUseProgram(this->defaultProgram);
-    glUniformMatrix4fv(this->uniformViewport, 1, GL_FALSE, &ortho[0][0]);
+    glUseProgram(this->lineProgram);
+    glUniformMatrix4fv(this->uniformLineViewport, 1, GL_FALSE, &ortho[0][0]);
     glUseProgram(0);
     
-    glGenBuffers(1, &this->arrayBuffer);
-    glGenBuffers(1, &this->elementBuffer);
-    glGenVertexArrays(1, &this->vertexArray);
+    glGenBuffers(1, &this->lineArrayBuffer);
+    glGenBuffers(1, &this->lineElementBuffer);
+    glGenVertexArrays(1, &this->lineVertexArray);
 
-    glBindVertexArray(this->vertexArray);
+    glBindVertexArray(this->lineVertexArray);
     {
-        glBindBuffer(GL_ARRAY_BUFFER, this->arrayBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, this->lineArrayBuffer);
         {
             glEnableVertexAttribArray(0);
             glEnableVertexAttribArray(1);
             glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, 0);
             glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, (GLvoid*) (sizeof(float) * 2));
         }
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elementBuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->lineElementBuffer);
     }
     glBindVertexArray(0);
+
+    glGenBuffers(1, &this->passthroughBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, this->passthroughBuffer);
+    {
+        GLfloat data[] = { 1.f, 1.f, -1.f, 1.f, -1.f,-1.f,
+					      -1.f,-1.f,  1.f,-1.f,  1.f, 1.f };
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 12, data, GL_STATIC_DRAW);
+	    glEnableVertexAttribArray(0);
+	    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0); 
+    }
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void LineMode::Destroy()
 {
-    glDeleteVertexArrays(1, &this->vertexArray);
-    glDeleteBuffers(1, &this->arrayBuffer);
-    glDeleteBuffers(1, &this->elementBuffer);
+    glDeleteVertexArrays(1, &this->lineVertexArray);
+    glDeleteBuffers(1, &this->lineArrayBuffer);
+    glDeleteBuffers(1, &this->lineElementBuffer);
+    
+    glDeleteProgram(this->lineProgram);
+    glDeleteProgram(this->passthroughProgram);
+    glDeleteProgram(this->gaussianHProgram);
+    glDeleteProgram(this->gaussianVProgram);
 
-    glDeleteProgram(this->defaultProgram);
-    glDeleteShader(this->defaultVertShader);
-    glDeleteShader(this->defaultFragShader);
+    glDeleteShader(this->lineVertShader);
+    glDeleteShader(this->lineFragShader);
+    glDeleteShader(this->passthroughFragShader);
+    glDeleteShader(this->passthroughVertShader);
+    glDeleteShader(this->gaussianHFragShader);
+    glDeleteShader(this->gaussianVFragShader);
 }
 
 void LineMode::Update()
@@ -94,11 +130,11 @@ void LineMode::Update()
         count++;
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, this->arrayBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, this->lineArrayBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * anum, adata, GL_STREAM_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elementBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->lineElementBuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * inum, idata, GL_STREAM_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -108,11 +144,11 @@ void LineMode::Update()
 
 void LineMode::Render()
 {
-    glUseProgram(this->defaultProgram);
+    glUseProgram(this->lineProgram);
     {
         float time = this->currentFrame.tick / 1000.0;
-        glUniform1f(this->uniformTime, time);
-        glBindVertexArray(this->vertexArray);
+        glUniform1f(this->uniformLineTime, time);
+        glBindVertexArray(this->lineVertexArray);
         {
             int inum = (this->points->size() - 1) * 2;
             glDrawElements(GL_LINES, inum, GL_UNSIGNED_INT, 0);
