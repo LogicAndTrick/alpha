@@ -2,9 +2,11 @@
 
 uniform sampler2D texture;
 
+smooth in vec2 textureCoords;
+
 out vec4 colour;
 
 void main(void)
 {
-    colour = texture2D(texture, vec2(gl_FragCoord));
+    colour = texture2D(texture, textureCoords);
 }

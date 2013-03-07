@@ -19,6 +19,7 @@ LineMode::~LineMode(void)
 
 void LineMode::Initialise()
 {
+    // GL Init
     glClearColor(0, 0, 0, 0);
     glLineWidth(4);
     glEnable(GL_LINE_SMOOTH);
@@ -28,6 +29,7 @@ void LineMode::Initialise()
     
     char path[260] = "";
 
+    // Load Shaders
     globals::ResolvePath("shaders/line.vert", path);
     this->lineVertShader = shader::LoadFromFile(path, GL_VERTEX_SHADER);
 
@@ -46,11 +48,13 @@ void LineMode::Initialise()
     globals::ResolvePath("shaders/gaussian_vert.frag", path);
     this->gaussianVFragShader = shader::LoadFromFile(path, GL_FRAGMENT_SHADER);
     
+    // Create Programs
     this->lineProgram = shader::CreateProgram(this->lineVertShader, this->lineFragShader);
     this->passthroughProgram = shader::CreateProgram(this->passthroughVertShader, this->passthroughFragShader);
     this->gaussianHProgram = shader::CreateProgram(this->passthroughVertShader, this->gaussianHFragShader);
     this->gaussianVProgram = shader::CreateProgram(this->passthroughVertShader, this->gaussianVFragShader);
     
+    // Line Program Variables
     this->uniformLineViewport = glGetUniformLocation(this->lineProgram, "viewport");
     this->uniformLineTime = glGetUniformLocation(this->lineProgram, "time");
     glm::mat4 ortho = glm::ortho<float>(0, 640, 480, 0);
@@ -59,6 +63,7 @@ void LineMode::Initialise()
     glUniformMatrix4fv(this->uniformLineViewport, 1, GL_FALSE, &ortho[0][0]);
     glUseProgram(0);
     
+    // Line Buffers (array, elements, vao)
     glGenBuffers(1, &this->lineArrayBuffer);
     glGenBuffers(1, &this->lineElementBuffer);
     glGenVertexArrays(1, &this->lineVertexArray);
@@ -76,6 +81,7 @@ void LineMode::Initialise()
     }
     glBindVertexArray(0);
 
+    // Passthrough Buffers (just the array)
     glGenBuffers(1, &this->passthroughBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, this->passthroughBuffer);
     {
@@ -88,10 +94,27 @@ void LineMode::Initialise()
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    // Frame Buffers
+    glGenTextures(1, &this->sceneFrameTexture);
+    glBindTexture(GL_TEXTURE_2D, this->sceneFrameTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 640, 480, 0, GL_BGR, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glGenFramebuffers(1, &this->sceneFrameBuffer);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->sceneFrameBuffer);
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->sceneFrameTexture, 0);
 }
 
 void LineMode::Destroy()
 {
+    glDeleteTextures(1, &this->sceneFrameTexture);
+    glDeleteFramebuffers(1, &this->sceneFrameBuffer);
+
+    glDeleteBuffers(1, &this->passthroughBuffer);
+
     glDeleteVertexArrays(1, &this->lineVertexArray);
     glDeleteBuffers(1, &this->lineArrayBuffer);
     glDeleteBuffers(1, &this->lineElementBuffer);
@@ -144,35 +167,32 @@ void LineMode::Update()
 
 void LineMode::Render()
 {
-    glUseProgram(this->lineProgram);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->sceneFrameBuffer);
     {
-        float time = this->currentFrame.tick / 1000.0;
-        glUniform1f(this->uniformLineTime, time);
-        glBindVertexArray(this->lineVertexArray);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glUseProgram(this->lineProgram);
         {
-            int inum = (this->points->size() - 1) * 2;
-            glDrawElements(GL_LINES, inum, GL_UNSIGNED_INT, 0);
+            float time = this->currentFrame.tick / 1000.0;
+            glUniform1f(this->uniformLineTime, time);
+            glBindVertexArray(this->lineVertexArray);
+            {
+                int inum = (this->points->size() - 1) * 2;
+                glDrawElements(GL_LINES, inum, GL_UNSIGNED_INT, 0);
+            }
+            glBindVertexArray(0);
         }
-        glBindVertexArray(0);
+    }
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, this->sceneFrameTexture);
+    glUseProgram(this->passthroughProgram);
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, this->passthroughBuffer);
+        {
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+        }
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
     glUseProgram(0);
-
-    return;
-
-    glColor3f(1.0, 1.0, 1.0);
-    glBegin(GL_LINES);
-    glm::vec2 b;
-    bool first = true;
-    for (std::list<glm::vec3>::iterator it = this->points->begin(); it != this->points->end(); ++it) {
-        if (!first) {
-            glVertex2f(b.x, b.y);
-            glVertex2f(it->x, it->y);
-        }
-        first = false;
-        b.x = it->x;
-        b.y = it->y;
-    }
-    glEnd();
 }
 
 void LineMode::OnMouseMove(int x, int y, int deltaX, int deltaY)

@@ -44,5 +44,14 @@ private:
     
     GLuint uniformLineViewport;
     GLuint uniformLineTime;
+
+    GLuint sceneFrameBuffer;
+    GLuint sceneFrameTexture;
+
+    GLuint gaussianHFrameBuffer;
+    GLuint gaussianHFrameTexture;
+
+    GLuint gaussianVFrameBuffer;
+    GLuint gaussianVFrameTexture;
 };
 
