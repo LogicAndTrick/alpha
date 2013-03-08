@@ -10,5 +10,5 @@ const float TIME_FACTOR = 1 / MAX_TIME;
 void main(void)
 {
     float alpha = max(0, 1 - (TIME_FACTOR * age));
-	colour = vec4(1, 1, 1, alpha);
+	colour = vec4(vec3(1, 1, 1) * alpha, 1);
 }

@@ -198,8 +198,8 @@ void LineMode::Render()
 void LineMode::OnMouseMove(int x, int y, int deltaX, int deltaY)
 {
     float time = this->currentFrame.tick / 1000.0;
-    this->points->push_front(glm::vec3(x, y, time));
-    if (this->points->size() > LineMode::MAX_POINTS) this->points->pop_back();
+    this->points->push_back(glm::vec3(x, y, time));
+    if (this->points->size() > LineMode::MAX_POINTS) this->points->pop_front();
 }
 
 void LineMode::OnResize(int w, int h)
