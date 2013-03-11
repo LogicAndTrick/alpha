@@ -113,7 +113,7 @@ void LineMode::Initialise()
     
     glGenTextures(1, &this->alphaSceneFrameTexture);
     glBindTexture(GL_TEXTURE_2D, this->alphaSceneFrameTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 640, 480, 0, GL_BGR, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 640, 480, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -210,6 +210,7 @@ void LineMode::Update()
 
 void LineMode::Render()
 {
+    // Draw the standard scene
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->sceneFrameBuffer);
     {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -226,6 +227,7 @@ void LineMode::Render()
         }
     }
 
+    // Convert it to alpha image
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->alphaSceneFrameBuffer);
     {
         glBindTexture(GL_TEXTURE_2D, this->sceneFrameTexture);
@@ -240,6 +242,7 @@ void LineMode::Render()
         }
     }
 
+    // Draw to the first blur buffer
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->gaussianHFrameBuffer);
     {
         glBindTexture(GL_TEXTURE_2D, this->alphaSceneFrameTexture);
@@ -254,7 +257,8 @@ void LineMode::Render()
         }
     }
     
-    for (int i = 0; i < 10; i++)
+    // Do some blurring
+    for (int i = 0; i < 8; i++)
     {
         int buf = i % 2 == 0 ? this->gaussianVFrameBuffer : this->gaussianHFrameBuffer;
         int tex = i % 2 == 0 ? this->gaussianHFrameTexture : this->gaussianVFrameTexture;
@@ -274,8 +278,8 @@ void LineMode::Render()
         }
     }
 
+    // Draw the blur to the screen
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
     glBindTexture(GL_TEXTURE_2D, this->gaussianHFrameTexture);
     glUseProgram(this->passthroughProgram);
     {
@@ -286,7 +290,7 @@ void LineMode::Render()
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    return;
+    //return;
     
     glBindTexture(GL_TEXTURE_2D, this->alphaSceneFrameTexture);
     glUseProgram(this->passthroughProgram);
