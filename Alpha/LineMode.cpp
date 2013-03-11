@@ -36,6 +36,9 @@ void LineMode::Initialise()
     globals::ResolvePath("shaders/line.frag", path);
     this->lineFragShader = shader::LoadFromFile(path, GL_FRAGMENT_SHADER);
 
+    globals::ResolvePath("shaders/line_alpha.frag", path);
+    this->alphaLineFragShader = shader::LoadFromFile(path, GL_FRAGMENT_SHADER);
+
     globals::ResolvePath("shaders/passthrough.vert", path);
     this->passthroughVertShader = shader::LoadFromFile(path, GL_VERTEX_SHADER);
 
@@ -50,6 +53,7 @@ void LineMode::Initialise()
     
     // Create Programs
     this->lineProgram = shader::CreateProgram(this->lineVertShader, this->lineFragShader);
+    this->alphaLineProgram = shader::CreateProgram(this->passthroughVertShader, this->alphaLineFragShader);
     this->passthroughProgram = shader::CreateProgram(this->passthroughVertShader, this->passthroughFragShader);
     this->gaussianHProgram = shader::CreateProgram(this->passthroughVertShader, this->gaussianHFragShader);
     this->gaussianVProgram = shader::CreateProgram(this->passthroughVertShader, this->gaussianVFragShader);
@@ -95,7 +99,7 @@ void LineMode::Initialise()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    // Frame Buffers
+    // Scene Frame Buffer
     glGenTextures(1, &this->sceneFrameTexture);
     glBindTexture(GL_TEXTURE_2D, this->sceneFrameTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 640, 480, 0, GL_BGR, GL_UNSIGNED_BYTE, NULL);
@@ -106,10 +110,49 @@ void LineMode::Initialise()
     glGenFramebuffers(1, &this->sceneFrameBuffer);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->sceneFrameBuffer);
     glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->sceneFrameTexture, 0);
+    
+    glGenTextures(1, &this->alphaSceneFrameTexture);
+    glBindTexture(GL_TEXTURE_2D, this->alphaSceneFrameTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 640, 480, 0, GL_BGR, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glGenFramebuffers(1, &this->alphaSceneFrameBuffer);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->alphaSceneFrameBuffer);
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->alphaSceneFrameTexture, 0);
+
+    // Blur Buffers
+    glGenTextures(1, &this->gaussianHFrameTexture);
+    glBindTexture(GL_TEXTURE_2D, this->gaussianHFrameTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 640, 480, 0, GL_BGR, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glGenFramebuffers(1, &this->gaussianHFrameBuffer);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->gaussianHFrameBuffer);
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->gaussianHFrameTexture, 0);
+    
+    glGenTextures(1, &this->gaussianVFrameTexture);
+    glBindTexture(GL_TEXTURE_2D, this->gaussianVFrameTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 640, 480, 0, GL_BGR, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glGenFramebuffers(1, &this->gaussianVFrameBuffer);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->gaussianVFrameBuffer);
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->gaussianVFrameTexture, 0);
 }
 
 void LineMode::Destroy()
 {
+    glDeleteTextures(1, &this->gaussianHFrameTexture);
+    glDeleteFramebuffers(1, &this->gaussianHFrameBuffer);
+    glDeleteTextures(1, &this->gaussianVFrameTexture);
+    glDeleteFramebuffers(1, &this->gaussianVFrameBuffer);
+
     glDeleteTextures(1, &this->sceneFrameTexture);
     glDeleteFramebuffers(1, &this->sceneFrameBuffer);
 
@@ -182,8 +225,70 @@ void LineMode::Render()
             glBindVertexArray(0);
         }
     }
+
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->alphaSceneFrameBuffer);
+    {
+        glBindTexture(GL_TEXTURE_2D, this->sceneFrameTexture);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glUseProgram(this->alphaLineProgram);
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, this->passthroughBuffer);
+            {
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+            }
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        }
+    }
+
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->gaussianHFrameBuffer);
+    {
+        glBindTexture(GL_TEXTURE_2D, this->alphaSceneFrameTexture);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glUseProgram(this->gaussianHProgram);
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, this->passthroughBuffer);
+            {
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+            }
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        }
+    }
+    
+    for (int i = 0; i < 10; i++)
+    {
+        int buf = i % 2 == 0 ? this->gaussianVFrameBuffer : this->gaussianHFrameBuffer;
+        int tex = i % 2 == 0 ? this->gaussianHFrameTexture : this->gaussianVFrameTexture;
+        int prg = i % 2 == 0 ? this->gaussianVProgram : this->gaussianHProgram;
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, buf);
+        {
+            glBindTexture(GL_TEXTURE_2D, tex);
+            glClear(GL_COLOR_BUFFER_BIT);
+            glUseProgram(prg);
+            {
+                glBindBuffer(GL_ARRAY_BUFFER, this->passthroughBuffer);
+                {
+                    glDrawArrays(GL_TRIANGLES, 0, 6);
+                }
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
+            }
+        }
+    }
+
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    glBindTexture(GL_TEXTURE_2D, this->sceneFrameTexture);
+
+    glBindTexture(GL_TEXTURE_2D, this->gaussianHFrameTexture);
+    glUseProgram(this->passthroughProgram);
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, this->passthroughBuffer);
+        {
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+        }
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    return;
+    
+    glBindTexture(GL_TEXTURE_2D, this->alphaSceneFrameTexture);
     glUseProgram(this->passthroughProgram);
     {
         glBindBuffer(GL_ARRAY_BUFFER, this->passthroughBuffer);
