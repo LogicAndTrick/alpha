@@ -26,6 +26,8 @@ private:
     
     GLuint lineVertShader;
     GLuint lineFragShader;
+    GLuint quadsVertShader;
+    GLuint quadsFragShader;
     GLuint alphaLineFragShader;
     GLuint passthroughVertShader;
     GLuint passthroughFragShader;
@@ -33,6 +35,7 @@ private:
     GLuint gaussianHFragShader;
     
     GLuint lineProgram;
+    GLuint quadsProgram;
     GLuint alphaLineProgram;
     GLuint passthroughProgram;
     GLuint gaussianVProgram;
@@ -42,10 +45,15 @@ private:
     GLuint lineElementBuffer;
     GLuint lineVertexArray;
 
+    GLuint quadsBuffer;
+
     GLuint passthroughBuffer;
     
     GLuint uniformLineViewport;
     GLuint uniformLineTime;
+    
+    GLuint uniformQuadsViewport;
+    GLuint uniformQuadsTime;
 
     GLuint sceneFrameBuffer;
     GLuint sceneFrameTexture;

@@ -770,5 +770,11 @@
     <None Include="..\shaders\line_alpha.frag">
       <Filter>shaders</Filter>
     </None>
+    <None Include="..\shaders\quads.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders\quads.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

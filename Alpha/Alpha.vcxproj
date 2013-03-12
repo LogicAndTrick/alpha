@@ -225,6 +225,8 @@ copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\" /Y</Command>
     <None Include="..\shaders\line_alpha.frag" />
     <None Include="..\shaders\passthrough.frag" />
     <None Include="..\shaders\passthrough.vert" />
+    <None Include="..\shaders\quads.frag" />
+    <None Include="..\shaders\quads.vert" />
     <None Include="glm\core\func_common.inl" />
     <None Include="glm\core\func_exponential.inl" />
     <None Include="glm\core\func_geometric.inl" />
