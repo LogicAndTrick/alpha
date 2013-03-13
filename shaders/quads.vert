@@ -10,6 +10,6 @@ uniform mat4 viewport;
 
 void main()
 {
-	gl_Position = viewport * vec4(vec2(200,200) + position.xy * 100, 0.0, 1.0);
+	gl_Position = viewport * vec4(position.xy, 0.0, 1.0);
     colour = vertexColour;
 }

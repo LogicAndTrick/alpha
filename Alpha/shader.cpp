@@ -2,11 +2,44 @@
 #include <fstream>
 #include <string>
 
+#include "globals.h"
 #include "shader.h"
 
 using namespace std;
 
 namespace shader {
+
+    program LoadProgramFromFiles(const char* vertFileName, const char* fragFileName)
+    {
+        program prog;
+        char path[260] = "";
+
+        globals::ResolvePath(vertFileName, path);
+        prog.vertShader = shader::LoadFromFile(path, GL_VERTEX_SHADER);
+
+        globals::ResolvePath(fragFileName, path);
+        prog.fragShader = shader::LoadFromFile(path, GL_FRAGMENT_SHADER);
+
+        prog.id = CreateProgram(prog.vertShader, prog.fragShader);
+        return prog;
+    }
+
+    void DestroyProgram(program prog)
+    {
+        glDeleteProgram(prog.id);
+        glDeleteShader(prog.vertShader);
+        glDeleteShader(prog.fragShader);
+    }
+    
+    void Bind(program prog)
+    {
+        glUseProgram(prog.id);
+    }
+
+    void Unbind()
+    {
+        glUseProgram(0);
+    }
 
     GLuint LoadFromFile(const char* filename, GLenum shaderType) {
 	    ifstream file(filename);

@@ -29,59 +29,29 @@ void LineMode::Initialise()
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-    char path[260] = "";
-
-    // Load Shaders
-    globals::ResolvePath("shaders/line.vert", path);
-    this->lineVertShader = shader::LoadFromFile(path, GL_VERTEX_SHADER);
-
-    globals::ResolvePath("shaders/line.frag", path);
-    this->lineFragShader = shader::LoadFromFile(path, GL_FRAGMENT_SHADER);
-    
-    globals::ResolvePath("shaders/quads.vert", path);
-    this->quadsVertShader = shader::LoadFromFile(path, GL_VERTEX_SHADER);
-
-    globals::ResolvePath("shaders/quads.frag", path);
-    this->quadsFragShader = shader::LoadFromFile(path, GL_FRAGMENT_SHADER);
-
-    globals::ResolvePath("shaders/line_alpha.frag", path);
-    this->alphaLineFragShader = shader::LoadFromFile(path, GL_FRAGMENT_SHADER);
-
-    globals::ResolvePath("shaders/passthrough.vert", path);
-    this->passthroughVertShader = shader::LoadFromFile(path, GL_VERTEX_SHADER);
-
-    globals::ResolvePath("shaders/passthrough.frag", path);
-    this->passthroughFragShader = shader::LoadFromFile(path, GL_FRAGMENT_SHADER);
-
-    globals::ResolvePath("shaders/gaussian_hor.frag", path);
-    this->gaussianHFragShader = shader::LoadFromFile(path, GL_FRAGMENT_SHADER);
-
-    globals::ResolvePath("shaders/gaussian_vert.frag", path);
-    this->gaussianVFragShader = shader::LoadFromFile(path, GL_FRAGMENT_SHADER);
-    
     // Create Programs
-    this->lineProgram = shader::CreateProgram(this->lineVertShader, this->lineFragShader);
-    this->quadsProgram = shader::CreateProgram(this->quadsVertShader, this->quadsFragShader);
-    this->alphaLineProgram = shader::CreateProgram(this->passthroughVertShader, this->alphaLineFragShader);
-    this->passthroughProgram = shader::CreateProgram(this->passthroughVertShader, this->passthroughFragShader);
-    this->gaussianHProgram = shader::CreateProgram(this->passthroughVertShader, this->gaussianHFragShader);
-    this->gaussianVProgram = shader::CreateProgram(this->passthroughVertShader, this->gaussianVFragShader);
+    this->lineProgram = shader::LoadProgramFromFiles("shaders/line.vert", "shaders/line.frag");
+    this->quadsProgram = shader::LoadProgramFromFiles("shaders/quads.vert", "shaders/quads.frag");
+    this->alphaLineProgram = shader::LoadProgramFromFiles("shaders/passthrough.vert", "shaders/line_alpha.frag");
+    this->passthroughProgram = shader::LoadProgramFromFiles("shaders/passthrough.vert", "shaders/passthrough.frag");
+    this->gaussianHProgram = shader::LoadProgramFromFiles("shaders/passthrough.vert", "shaders/gaussian_hor.frag");
+    this->gaussianVProgram = shader::LoadProgramFromFiles("shaders/passthrough.vert", "shaders/gaussian_vert.frag");
     
     // Line Program Variables
-    this->uniformLineViewport = glGetUniformLocation(this->lineProgram, "viewport");
-    this->uniformLineTime = glGetUniformLocation(this->lineProgram, "time");
+    this->uniformLineViewport = glGetUniformLocation(this->lineProgram.id, "viewport");
+    this->uniformLineTime = glGetUniformLocation(this->lineProgram.id, "time");
     
     // Quads Program Variables
-    this->uniformQuadsViewport = glGetUniformLocation(this->quadsProgram, "viewport");
-    this->uniformQuadsTime = glGetUniformLocation(this->quadsProgram, "time");
+    this->uniformQuadsViewport = glGetUniformLocation(this->quadsProgram.id, "viewport");
+    this->uniformQuadsTime = glGetUniformLocation(this->quadsProgram.id, "time");
     
     glm::mat4 ortho = glm::ortho<float>(0, 640, 480, 0);
 
-    glUseProgram(this->lineProgram);
+    shader::Bind(this->lineProgram);
     glUniformMatrix4fv(this->uniformLineViewport, 1, GL_FALSE, &ortho[0][0]);
     glUseProgram(0);
 
-    glUseProgram(this->quadsProgram);
+    shader::Bind(this->quadsProgram);
     glUniformMatrix4fv(this->uniformQuadsViewport, 1, GL_FALSE, &ortho[0][0]);
     glUseProgram(0);
     
@@ -97,35 +67,13 @@ void LineMode::Initialise()
             glEnableVertexAttribArray(0);
             glEnableVertexAttribArray(1);
             glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, 0);
-            glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, (GLvoid*) (sizeof(float) * 2));
+            glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, (GLvoid*) (sizeof(GLfloat) * 2));
         }
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->lineElementBuffer);
     }
     glBindVertexArray(0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // Quads Buffers (just the array for now)
-    glGenBuffers(1, &this->quadsBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, this->quadsBuffer);
-    {
-        GLfloat data[] = {
-            0, 0, 0, 1, 0, 1,
-            1, 0, 1, 0, 0, 1,
-            1, 1, 0, 0, 1, 1,
-
-            0, 0, 0, 1, 0, 1,
-            1, 1, 0, 0, 1, 1,
-            0, 1, 1, 1, 0, 1,
-        };
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 36, data, GL_STATIC_DRAW);
-	    glEnableVertexAttribArray(0);
-	    glEnableVertexAttribArray(1);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 6, 0);
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 6, (GLvoid*) (sizeof(float) * 2));
-    }
-    
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     // Passthrough Buffers (just the array)
@@ -140,7 +88,28 @@ void LineMode::Initialise()
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    // Quads Buffers (just the array for now)
+    glGenBuffers(1, &this->quadsBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, this->quadsBuffer);
+    {
+        GLfloat data[] = {
+            0, 0, 0, 1, 0, 1,
+            10, 0, 1, 0, 0, 1,
+            10, 10, 0, 0, 1, 1,
 
+            0, 0, 0, 1, 0, 1,
+            10, 10, 0, 0, 1, 1,
+            0, 10, 1, 1, 0, 1,
+        };
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 36, data, GL_STATIC_DRAW);
+	    glEnableVertexAttribArray(0);
+	    glEnableVertexAttribArray(1);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 6, 0);
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 6, (GLvoid*) (sizeof(GLfloat) * 2));
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
     // Scene Frame Buffer
     glGenTextures(1, &this->sceneFrameTexture);
     glBindTexture(GL_TEXTURE_2D, this->sceneFrameTexture);
@@ -205,20 +174,11 @@ void LineMode::Destroy()
     glDeleteBuffers(1, &this->lineArrayBuffer);
     glDeleteBuffers(1, &this->lineElementBuffer);
     
-    glDeleteProgram(this->lineProgram);
-    glDeleteProgram(this->quadsProgram);
-    glDeleteProgram(this->passthroughProgram);
-    glDeleteProgram(this->gaussianHProgram);
-    glDeleteProgram(this->gaussianVProgram);
-
-    glDeleteShader(this->lineVertShader);
-    glDeleteShader(this->lineFragShader);
-    glDeleteShader(this->quadsVertShader);
-    glDeleteShader(this->quadsFragShader);
-    glDeleteShader(this->passthroughFragShader);
-    glDeleteShader(this->passthroughVertShader);
-    glDeleteShader(this->gaussianHFragShader);
-    glDeleteShader(this->gaussianVFragShader);
+    shader::DestroyProgram(this->lineProgram);
+    shader::DestroyProgram(this->quadsProgram);
+    shader::DestroyProgram(this->passthroughProgram);
+    shader::DestroyProgram(this->gaussianHProgram);
+    shader::DestroyProgram(this->gaussianVProgram);
 }
 
 void LineMode::Update()
@@ -262,7 +222,7 @@ void LineMode::Render()
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->sceneFrameBuffer);
     {
         glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(this->lineProgram);
+        shader::Bind(this->lineProgram);
         {
             glUniform1f(this->uniformLineTime, time);
             glBindVertexArray(this->lineVertexArray);
@@ -272,6 +232,7 @@ void LineMode::Render()
             }
             glBindVertexArray(0);
         }
+        shader::Unbind();
     }
 
     // Convert it to alpha image
@@ -279,7 +240,7 @@ void LineMode::Render()
     {
         glClear(GL_COLOR_BUFFER_BIT);
         glBindTexture(GL_TEXTURE_2D, 0);
-        glUseProgram(this->quadsProgram);
+        shader::Bind(this->quadsProgram);
         {
             glUniform1f(this->uniformQuadsTime, time);
             glBindBuffer(GL_ARRAY_BUFFER, this->quadsBuffer);
@@ -288,8 +249,9 @@ void LineMode::Render()
             }
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
+        shader::Unbind();
         glBindTexture(GL_TEXTURE_2D, this->sceneFrameTexture);
-        glUseProgram(this->alphaLineProgram);
+        shader::Bind(this->alphaLineProgram);
         {
             glBindBuffer(GL_ARRAY_BUFFER, this->passthroughBuffer);
             {
@@ -297,6 +259,7 @@ void LineMode::Render()
             }
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
+        shader::Unbind();
     }
 
     // Draw to the first blur buffer
@@ -304,7 +267,7 @@ void LineMode::Render()
     {
         glBindTexture(GL_TEXTURE_2D, this->alphaSceneFrameTexture);
         glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(this->gaussianHProgram);
+        shader::Bind(this->gaussianHProgram);
         {
             glBindBuffer(GL_ARRAY_BUFFER, this->passthroughBuffer);
             {
@@ -312,6 +275,7 @@ void LineMode::Render()
             }
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
+        shader::Unbind();
     }
     
     // Do some blurring
@@ -319,12 +283,12 @@ void LineMode::Render()
     {
         int buf = i % 2 == 0 ? this->gaussianVFrameBuffer : this->gaussianHFrameBuffer;
         int tex = i % 2 == 0 ? this->gaussianHFrameTexture : this->gaussianVFrameTexture;
-        int prg = i % 2 == 0 ? this->gaussianVProgram : this->gaussianHProgram;
+        shader::program prg = i % 2 == 0 ? this->gaussianVProgram : this->gaussianHProgram;
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, buf);
         {
             glBindTexture(GL_TEXTURE_2D, tex);
             glClear(GL_COLOR_BUFFER_BIT);
-            glUseProgram(prg);
+            shader::Bind(prg);
             {
                 glBindBuffer(GL_ARRAY_BUFFER, this->passthroughBuffer);
                 {
@@ -332,13 +296,14 @@ void LineMode::Render()
                 }
                 glBindBuffer(GL_ARRAY_BUFFER, 0);
             }
+            shader::Unbind();
         }
     }
 
     // Draw the blur to the screen
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, this->gaussianHFrameTexture);
-    glUseProgram(this->passthroughProgram);
+    shader::Bind(this->passthroughProgram);
     {
         glBindBuffer(GL_ARRAY_BUFFER, this->passthroughBuffer);
         {
@@ -346,11 +311,12 @@ void LineMode::Render()
         }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
+    shader::Unbind();
 
-    //return;
+    return;
     
     glBindTexture(GL_TEXTURE_2D, this->alphaSceneFrameTexture);
-    glUseProgram(this->passthroughProgram);
+    shader::Bind(this->passthroughProgram);
     {
         glBindBuffer(GL_ARRAY_BUFFER, this->passthroughBuffer);
         {
@@ -358,7 +324,7 @@ void LineMode::Render()
         }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
-    glUseProgram(0);
+    shader::Unbind();
 }
 
 void LineMode::OnMouseMove(int x, int y, int deltaX, int deltaY)
