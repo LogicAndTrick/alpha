@@ -23,6 +23,9 @@
     <Filter Include="shaders">
       <UniqueIdentifier>{800fdf02-6acf-496e-9172-37d86c2fa38f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ArrowMode">
+      <UniqueIdentifier>{a20e2c3a-f711-457f-a3f6-3f92a8385654}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -45,6 +48,9 @@
     </ClCompile>
     <ClCompile Include="globals.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ArrowMode.cpp">
+      <Filter>ArrowMode</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -444,6 +450,12 @@
     <ClInclude Include="common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ArrowMode.h">
+      <Filter>ArrowMode</Filter>
+    </ClInclude>
+    <ClInclude Include="level.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="glm\gtx\associated_min_max.inl">
@@ -774,6 +786,12 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="..\shaders\quads.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders\circles.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders\circles.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

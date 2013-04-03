@@ -18,6 +18,7 @@ int Loop::Run()
     if (!this->Initialise()) {
         return -1;
     }
+    this->mode->SetFrame(this->currentFrame);
     this->mode->Initialise();
     this->running = true;
     SDL_Event event;

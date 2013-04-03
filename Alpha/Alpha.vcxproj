@@ -75,6 +75,7 @@ copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\" /Y</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ArrowMode.cpp" />
     <ClCompile Include="GameMode.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="gl\glew.c" />
@@ -84,6 +85,7 @@ copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\" /Y</Command>
     <ClCompile Include="shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ArrowMode.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="GameMode.h" />
     <ClInclude Include="glm\core\func_common.hpp" />
@@ -212,12 +214,15 @@ copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\" /Y</Command>
     <ClInclude Include="gl\glew.h" />
     <ClInclude Include="gl\glxew.h" />
     <ClInclude Include="gl\wglew.h" />
+    <ClInclude Include="level.h" />
     <ClInclude Include="LineMode.h" />
     <ClInclude Include="Loop.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\shaders\circles.frag" />
+    <None Include="..\shaders\circles.vert" />
     <None Include="..\shaders\line.frag" />
     <None Include="..\shaders\line.vert" />
     <None Include="..\shaders\gaussian_hor.frag" />
