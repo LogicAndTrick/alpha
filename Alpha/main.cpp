@@ -7,6 +7,7 @@
 #include "Loop.h"
 #include "LineMode.h"
 #include "ArrowMode.h"
+#include "ParticleMode.h"
 
 int main ( int argc, char** argv )
 {
@@ -14,7 +15,8 @@ int main ( int argc, char** argv )
 
     GameMode *mode;
     //mode = new LineMode();
-    mode = new ArrowMode();
+    //mode = new ArrowMode();
+    mode = new ParticleMode();
     Loop *loop = new Loop(mode);
     int code = loop->Run();
     if (code != 0) {

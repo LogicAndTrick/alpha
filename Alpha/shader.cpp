@@ -24,10 +24,30 @@ namespace shader {
         return prog;
     }
 
+    
+    program LoadProgramFromFiles(const char* vertFileName, const char* geomFileName, const char* fragFileName)
+    {
+        program prog;
+        char path[260] = "";
+
+        globals::ResolvePath(vertFileName, path);
+        prog.vertShader = shader::LoadFromFile(path, GL_VERTEX_SHADER);
+
+        globals::ResolvePath(geomFileName, path);
+        prog.geomShader = shader::LoadFromFile(path, GL_GEOMETRY_SHADER);
+
+        globals::ResolvePath(fragFileName, path);
+        prog.fragShader = shader::LoadFromFile(path, GL_FRAGMENT_SHADER);
+
+        prog.id = CreateProgram(prog.vertShader, prog.geomShader, prog.fragShader);
+        return prog;
+    }
+
     void DestroyProgram(program prog)
     {
         glDeleteProgram(prog.id);
         glDeleteShader(prog.vertShader);
+        if (prog.geomShader) glDeleteShader(prog.geomShader);
         glDeleteShader(prog.fragShader);
     }
     
@@ -80,11 +100,18 @@ namespace shader {
     }
 
 
-    GLuint CreateProgram(GLuint vert, GLuint frag) {
+    GLuint CreateProgram(GLuint vert, GLuint frag)
+    {
+        return CreateProgram(vert, 0, frag);
+    }
+
+    GLuint CreateProgram(GLuint vert, GLuint geom, GLuint frag)
+    {
 	    GLint status;
 	    GLuint prog = glCreateProgram();
 
 	    glAttachShader(prog, vert);
+        if (geom) glAttachShader(prog, geom);
 	    glAttachShader(prog, frag);
 
 	    glLinkProgram(prog);

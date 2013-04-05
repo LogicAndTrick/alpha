@@ -26,6 +26,9 @@
     <Filter Include="ArrowMode">
       <UniqueIdentifier>{a20e2c3a-f711-457f-a3f6-3f92a8385654}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ParticleMode">
+      <UniqueIdentifier>{db04113a-98a4-483e-8aff-8fc6cd75e37a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -51,6 +54,12 @@
     </ClCompile>
     <ClCompile Include="ArrowMode.cpp">
       <Filter>ArrowMode</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleMode.cpp">
+      <Filter>ParticleMode</Filter>
+    </ClCompile>
+    <ClCompile Include="particle.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -456,6 +465,12 @@
     <ClInclude Include="level.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleMode.h">
+      <Filter>ParticleMode</Filter>
+    </ClInclude>
+    <ClInclude Include="particle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="glm\gtx\associated_min_max.inl">
@@ -792,6 +807,15 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="..\shaders\circles.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders\particle.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders\particle.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders\particle.geom">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

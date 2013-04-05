@@ -37,10 +37,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)..\SDL_VC\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\SDL_VC\include;$(SolutionDir)..\SDL_Image_VC\include;$(SolutionDir)..\SDL_TTF_VC\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>$(SolutionDir)..\SDL_VC\lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)..\SDL_VC\lib\x86;$(SolutionDir)..\SDL_Image_VC\lib\x86;$(SolutionDir)..\SDL_TTF_VC\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -49,13 +49,15 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;SDL.lib;SDLmain.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;SDL.lib;SDLmain.lib;SDL_image.lib;SDL_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(MSBuildProjectDirectory)\..\SDL.dll" "$(OutDir)\SDL.dll"
+      <Command>copy "$(MSBuildProjectDirectory)\..\*.dll" "$(OutDir)"
 mkdir "$(OutDir)\shaders\"
-copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\" /Y</Command>
+mkdir "$(OutDir)\textures\"
+copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\" /Y
+copy "$(MSBuildProjectDirectory)\..\textures" "$(OutDir)\textures\" /Y</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>del "$(OutDir)\shaders\" /Q</Command>
@@ -82,6 +84,8 @@ copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\" /Y</Command>
     <ClCompile Include="LineMode.cpp" />
     <ClCompile Include="Loop.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="particle.cpp" />
+    <ClCompile Include="ParticleMode.cpp" />
     <ClCompile Include="shader.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -217,6 +221,8 @@ copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\" /Y</Command>
     <ClInclude Include="level.h" />
     <ClInclude Include="LineMode.h" />
     <ClInclude Include="Loop.h" />
+    <ClInclude Include="particle.h" />
+    <ClInclude Include="ParticleMode.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="shader.h" />
   </ItemGroup>
@@ -228,6 +234,9 @@ copy "$(MSBuildProjectDirectory)\..\shaders" "$(OutDir)\shaders\" /Y</Command>
     <None Include="..\shaders\gaussian_hor.frag" />
     <None Include="..\shaders\gaussian_vert.frag" />
     <None Include="..\shaders\line_alpha.frag" />
+    <None Include="..\shaders\particle.frag" />
+    <None Include="..\shaders\particle.geom" />
+    <None Include="..\shaders\particle.vert" />
     <None Include="..\shaders\passthrough.frag" />
     <None Include="..\shaders\passthrough.vert" />
     <None Include="..\shaders\quads.frag" />

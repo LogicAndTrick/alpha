@@ -7,12 +7,13 @@
 #include "globals.h"
 #include "gamemode.h"
 #include "level.h"
+#include "particle.h"
 
-class ArrowMode : public GameMode
+class ParticleMode : public GameMode
 {
 public:
-    ArrowMode(void);
-    ~ArrowMode(void);
+    ParticleMode(void);
+    ~ParticleMode(void);
 
     void Initialise();
     void Destroy();
@@ -25,20 +26,9 @@ public:
 
     void OnResize(int w, int h);
 private:
-    level level;
-    long startTime;
+    shader::program program;
+    GLuint uniformViewport;
 
-    long pointCount;
-    float width;
-    float height;
-
-    shader::program circlesProgram;
-    GLuint uniformCirclesViewport;
-
-    GLuint circlesArrayBuffer;
-    GLuint circlesElementBuffer;
-    GLuint circlesVertexArray;
-
-    GLuint arrowTexture;
+    ParticleEffect *effect;
 };
 

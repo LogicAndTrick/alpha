@@ -2,8 +2,10 @@
 
 typedef struct {
     int type;
+    int direction;
     int lane;
     long position;
+    int visible;
 } arrow;
 
 typedef struct {
