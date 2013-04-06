@@ -10,6 +10,10 @@ void Particle_DoNothingDefault(particle* particle, long duration)
 {
 }
 
+void Particle_ResetNothingDefault(particle* particle)
+{
+}
+
 ParticleEffect::ParticleEffect(shader::program program, long stepDuration, long currentTime, int numParticles)
 {
     this->program = program;
@@ -23,8 +27,7 @@ ParticleEffect::ParticleEffect(shader::program program, long stepDuration, long 
     this->UpdatePosition = Particle_UpdatePositionDefault;
     this->UpdateColour = Particle_DoNothingDefault;
     this->UpdateSize = Particle_DoNothingDefault;
-
-    srand(currentTime);
+    this->ResetDeadParticle = Particle_ResetNothingDefault;
 
     glGenBuffers(1, &this->arrayBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, this->arrayBuffer);
@@ -78,23 +81,17 @@ void ParticleEffect::Render()
     shader::Unbind();
 }
 
-void ParticleEffect::ResetDeadParticles(void (*Reset)(particle*))
-{
-    for (int i = 0; i < this->numParticles; i++) {
-        particle *p = this->particles + i;
-        if (p->age > p->lifespan) {
-            Reset(p);
-        }
-    }
-}
-
 void ParticleEffect::Step()
 {
     for (int i = 0; i < this->numParticles; i++) {
         particle *p = this->particles + i;
-        this->UpdatePosition(p, this->stepDuration);
-        this->UpdateColour(p, this->stepDuration);
-        this->UpdateSize(p, this->stepDuration);
         p->age += this->stepDuration;
+        if (p->age > p->lifespan) {
+            this->ResetDeadParticle(p);
+        } else {
+            this->UpdatePosition(p, this->stepDuration);
+            this->UpdateColour(p, this->stepDuration);
+            this->UpdateSize(p, this->stepDuration);
+        }
     }
 }

@@ -24,8 +24,8 @@ public:
     void Add(particle p);
     void Update(frame f);
     void Render();
-    void ResetDeadParticles(void (*Reset)(particle*));
 
+    void (*ResetDeadParticle)(particle*);
     void (*UpdatePosition)(particle*, long duration);
     void (*UpdateColour)(particle*, long duration);
     void (*UpdateSize)(particle*, long duration);

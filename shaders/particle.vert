@@ -17,7 +17,7 @@ uniform mat4 viewport;
 void main()
 {
     g_position        = viewport * vec4(v_position.xy, 0, 1);
-    g_velocity        = v_velocity;
+    g_velocity        = vec2(v_velocity.x, -v_velocity.y);
     g_colour          = v_colour;
     g_age = v_sizeAgeLifespan.y / v_sizeAgeLifespan.z;
     g_size = (viewport * vec4(v_sizeAgeLifespan.xx, 0, 0)).xy;

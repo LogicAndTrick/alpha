@@ -11,7 +11,11 @@ ParticleMode::~ParticleMode(void)
 
 }
 
-particle createParticle(float x, float y, float vx, float vy, float size, long lifespan)
+particle createParticle(
+    float x, float y, 
+    float vx, float vy, 
+    float r, float g, float b,
+    float size, long lifespan)
 {
     particle p;
     p.lifespan = lifespan;
@@ -21,6 +25,10 @@ particle createParticle(float x, float y, float vx, float vy, float size, long l
     p.size = size;
     p.velocity.x = vx;
     p.velocity.y = vy;
+    p.colour.r = r;
+    p.colour.g = g;
+    p.colour.b = b;
+    p.colour.a = 1;
     return p;
 }
 
@@ -30,13 +38,18 @@ float random() {
 
 void resetParticle(particle *p)
 {
+    float x = 320;
+    float y = -120;
     particle c = createParticle(
-            random() * 640, // x
-            random() * 480, // y
-            (random()-0.5) * 30, // vx
-            (random()-0.5) * 100, // vy
+            x, // x
+            y, // y
+            (random()-0.5) * 320, // vx
+            (random()-0.0) * -240, // vy
+            0.5 + random() * 0.5, // r
+            0.5 + random() * 0.5, // g
+            0.5 + random() * 0.5, // b
             1 + random() * 1.5, // size
-            2000 + random() * 5000 // lifespan
+            1000 + random() * 4000 // lifespan
             );
     memcpy(p, &c, sizeof(particle));
 }
@@ -48,6 +61,15 @@ particle createRandomParticle()
     return p;
 }
 
+void ParticleMode_UpdatePosition(particle* particle, long duration)
+{
+    float time = duration / 1000.0f;
+    particle->position += particle->velocity * glm::vec2(time, time);
+    particle->velocity.y += 2; // gravity
+    particle->velocity.x += (random()-0.5) * 5;
+    particle->velocity.y += (random()-0.5) * 5;
+}
+
 void ParticleMode::Initialise()
 {
     glClearColor(0, 0, 0, 0);
@@ -57,8 +79,10 @@ void ParticleMode::Initialise()
     this->program = shader::LoadProgramFromFiles("shaders/particle.vert", "shaders/particle.geom", "shaders/particle.frag");
     this->uniformViewport = glGetUniformLocation(this->program.id, "viewport");
 
-    int numParticles = 1000;
-    this->effect = new ParticleEffect(this->program, 10, this->currentFrame.tick - 0, numParticles);
+    int numParticles = 2000;
+    this->effect = new ParticleEffect(this->program, 10, this->currentFrame.tick - 4000, numParticles);
+    this->effect->UpdatePosition = ParticleMode_UpdatePosition;
+    this->effect->ResetDeadParticle = resetParticle;
 
     for (int i = 0; i < numParticles; i++) {
         this->effect->Add(createRandomParticle());
@@ -75,7 +99,6 @@ void ParticleMode::Destroy()
 
 void ParticleMode::Update()
 {
-    this->effect->ResetDeadParticles(resetParticle);
     this->effect->Update(this->currentFrame);
 }
 
