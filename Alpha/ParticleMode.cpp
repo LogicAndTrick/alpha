@@ -39,12 +39,12 @@ float random() {
 void resetParticle(particle *p)
 {
     float x = 320;
-    float y = -120;
+    float y = 240;
     particle c = createParticle(
             x, // x
             y, // y
             (random()-0.5) * 320, // vx
-            (random()-0.0) * -240, // vy
+            (random()-0.0) * -360, // vy
             0.5 + random() * 0.5, // r
             0.5 + random() * 0.5, // g
             0.5 + random() * 0.5, // b
@@ -70,42 +70,101 @@ void ParticleMode_UpdatePosition(particle* particle, long duration)
     particle->velocity.y += (random()-0.5) * 5;
 }
 
+void ParticleMode_UpdatePosition2(particle* particle, long duration)
+{
+    float time = duration / 1000.0f;
+    particle->position += particle->velocity * glm::vec2(time, time);
+
+    particle->position.x += (random() - 0.5) * 0.1;
+    particle->position.y += (random() - 0.5) * 0.1;
+    particle->size += (random() - 0.5) * 0.2;
+    particle->velocity.x += (random() - 0.5) * 0.5;
+    particle->velocity.y += (random() - 0.5) * 0.5;
+}
+
+void ParticleMode_Reset2(particle *p)
+{
+    p->age = 0;
+    p->position.x += (random() - 0.5) * 5;
+    p->position.y += (random() - 0.5) * 5;
+    p->velocity.x = random() - 0.5;
+    p->velocity.y = random() - 0.5;
+    p->size = 1 + random() * 2;
+    p->age = 0;
+    p->lifespan = 1000 + random() * 2000;
+}
+
 void ParticleMode::Initialise()
 {
     glClearColor(0, 0, 0, 0);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    this->program = shader::LoadProgramFromFiles("shaders/particle.vert", "shaders/particle.geom", "shaders/particle.frag");
+    // Create programs
+    this->program = shader::LoadProgramFromFiles("shaders/particle.vert", "shaders/particle.geom", "shaders/particle_lines.frag");
     this->uniformViewport = glGetUniformLocation(this->program.id, "viewport");
 
-    int numParticles = 2000;
+    this->program2 = shader::LoadProgramFromFiles("shaders/particle.vert", "shaders/particle.geom", "shaders/particle_sparks.frag");
+    this->uniformViewport2 = glGetUniformLocation(this->program2.id, "viewport");
+
+    int numParticles = 1000;
+    int numSparks = 500;
+
+    // Create effects
     this->effect = new ParticleEffect(this->program, 10, this->currentFrame.tick - 4000, numParticles);
     this->effect->UpdatePosition = ParticleMode_UpdatePosition;
     this->effect->ResetDeadParticle = resetParticle;
 
+    this->effect2 = new ParticleEffect(this->program2, 10, this->currentFrame.tick - 4000, numSparks);
+    this->effect2->UpdatePosition = ParticleMode_UpdatePosition2;
+    this->effect2->ResetDeadParticle = ParticleMode_Reset2;
+
+
+    // Initialise effects
     for (int i = 0; i < numParticles; i++) {
         this->effect->Add(createRandomParticle());
     }
+
+    float cx = 320, cy = 240, radius = 150;
+    for (int i = 0; i < numSparks; i++) {
+        particle p;
+        float angle = (2 * 3.14159) * (i / (float) numSparks);
+        p.position.x = cx + cos(angle) * radius + (random() - 0.5) * 100;
+        p.position.y = cy + sin(angle) * radius + (random() - 0.5) * 100;
+        p.velocity.x = random() - 0.5;
+        p.velocity.y = random() - 0.5;
+        p.colour.r = p.colour.g = p.colour.b = p.colour.a = 1;
+        p.size = 1 + random() * 2;
+        p.age = 0;
+        p.lifespan = 1000 + random() * 2000;
+        this->effect2->Add(p);
+    }
     
+    // Prepare effects
     this->effect->Update(this->currentFrame);
+    this->effect2->Update(this->currentFrame);
 }
 
 void ParticleMode::Destroy()
 {
     delete this->effect;
     shader::DestroyProgram(this->program);
+
+    delete this->effect2;
+    shader::DestroyProgram(this->program2);
 }
 
 void ParticleMode::Update()
 {
     this->effect->Update(this->currentFrame);
+    this->effect2->Update(this->currentFrame);
 }
 
 void ParticleMode::Render()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     this->effect->Render();
+    this->effect2->Render();
 }
 
 void ParticleMode::OnKeyDown(SDLKey sym, SDLMod mod, Uint16 unicode)
@@ -125,5 +184,9 @@ void ParticleMode::OnResize(int w, int h)
 
     shader::Bind(this->program);
     glUniformMatrix4fv(this->uniformViewport, 1, GL_FALSE, &ortho[0][0]);
+    shader::Unbind();
+
+    shader::Bind(this->program2);
+    glUniformMatrix4fv(this->uniformViewport2, 1, GL_FALSE, &ortho[0][0]);
     shader::Unbind();
 }

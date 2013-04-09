@@ -809,13 +809,16 @@
     <None Include="..\shaders\circles.vert">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\shaders\particle.frag">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="..\shaders\particle.vert">
       <Filter>shaders</Filter>
     </None>
     <None Include="..\shaders\particle.geom">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders\particle_lines.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\shaders\particle_sparks.frag">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

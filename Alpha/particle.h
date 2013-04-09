@@ -17,7 +17,7 @@ typedef struct {
 
 class ParticleEffect {
 public:
-
+    
     ParticleEffect(shader::program program, long stepDuration, long currentTime, int numParticles);
     ~ParticleEffect();
 
@@ -35,11 +35,13 @@ private:
     int numParticles;
     int maxParticles;
     particle *particles;
+    GLuint *indices;
 
     long stepDuration;
     shader::program program;
 
     long nextStepTime;
-
+    
     GLuint arrayBuffer;
+    GLuint vertexArray;
 };
