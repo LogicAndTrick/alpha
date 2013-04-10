@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <stdlib.h>
 #include "gl/glew.h"
 #include "glm/glm.hpp"
@@ -14,6 +15,12 @@ typedef struct {
     GLfloat age;
     GLfloat lifespan;
 } particle;
+
+enum EffectType {
+    Infinite, // Revives itself forever
+    Persistent, // Revives itself on demand
+    Collected // Gets cleaned up once all particles are dead
+};
 
 class ParticleEffect {
 public:
@@ -35,7 +42,6 @@ private:
     int numParticles;
     int maxParticles;
     particle *particles;
-    GLuint *indices;
 
     long stepDuration;
     shader::program program;
@@ -44,4 +50,19 @@ private:
     
     GLuint arrayBuffer;
     GLuint vertexArray;
+};
+
+class ParticleEngine {
+public:
+    ParticleEngine(long stepDuration, long currentTime);
+    ~ParticleEngine();
+
+    ParticleEffect* Add(EffectType type, shader::program program, int numParticles);
+    void Update(frame f);
+    void Render();
+private:
+    std::vector<ParticleEffect*> *effects;
+
+    long stepDuration;
+    long currentTime;
 };

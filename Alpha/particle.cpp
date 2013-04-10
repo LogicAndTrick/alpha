@@ -23,9 +23,6 @@ ParticleEffect::ParticleEffect(shader::program program, long stepDuration, long 
     this->numParticles = 0;
     this->maxParticles = numParticles;
     this->particles = (particle*) malloc(sizeof(particle) * this->maxParticles);
-    this->indices = (GLuint*) malloc(sizeof(GLuint) * this->maxParticles);
-
-    for (int i = 0; i < this->maxParticles; i++) this->indices[i] = i;
     
     this->UpdatePosition = Particle_UpdatePositionDefault;
     this->UpdateColour = Particle_DoNothingDefault;
@@ -56,7 +53,6 @@ ParticleEffect::ParticleEffect(shader::program program, long stepDuration, long 
 ParticleEffect::~ParticleEffect()
 {
     free(this->particles);
-    free(this->indices);
 }
 
 void ParticleEffect::Add(particle p)
@@ -103,5 +99,42 @@ void ParticleEffect::Step()
             this->UpdateColour(p, this->stepDuration);
             this->UpdateSize(p, this->stepDuration);
         }
+    }
+}
+
+ParticleEngine::ParticleEngine(long stepDuration, long currentTime)
+{
+    this->currentTime = currentTime;
+    this->stepDuration = stepDuration;
+    this->effects = new std::vector<ParticleEffect*>();
+}
+
+ParticleEngine::~ParticleEngine()
+{
+    for (int i = 0; i < this->effects->size(); i++) {
+        delete this->effects->at(i);
+    }
+    this->effects->clear();
+    delete this->effects;
+}
+
+ParticleEffect* ParticleEngine::Add(EffectType type, shader::program program, int numParticles)
+{
+    ParticleEffect *effect = new ParticleEffect(program, this->stepDuration, this->currentTime, numParticles);
+    this->effects->push_back(effect);
+    return effect;
+}
+
+void ParticleEngine::Update(frame f)
+{
+    for (int i = 0; i < this->effects->size(); i++) {
+        this->effects->at(i)->Update(f);
+    }
+}
+
+void ParticleEngine::Render()
+{
+    for (int i = 0; i < this->effects->size(); i++) {
+        this->effects->at(i)->Render();
     }
 }

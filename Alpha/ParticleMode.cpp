@@ -110,20 +110,23 @@ void ParticleMode::Initialise()
     int numParticles = 1000;
     int numSparks = 500;
 
-    // Create effects
-    this->effect = new ParticleEffect(this->program, 10, this->currentFrame.tick - 4000, numParticles);
-    this->effect->UpdatePosition = ParticleMode_UpdatePosition;
-    this->effect->ResetDeadParticle = resetParticle;
+    // Create engine / effects
 
-    this->effect2 = new ParticleEffect(this->program2, 10, this->currentFrame.tick - 4000, numSparks);
-    this->effect2->UpdatePosition = ParticleMode_UpdatePosition2;
-    this->effect2->ResetDeadParticle = ParticleMode_Reset2;
+    this->engine = new ParticleEngine(10, this->currentFrame.tick - 4000);
 
+    ParticleEffect *effect;
 
-    // Initialise effects
+    effect = engine->Add(Infinite, this->program, numParticles);
+    effect->UpdatePosition = ParticleMode_UpdatePosition;
+    effect->ResetDeadParticle = resetParticle;
+
     for (int i = 0; i < numParticles; i++) {
-        this->effect->Add(createRandomParticle());
+        effect->Add(createRandomParticle());
     }
+
+    effect = engine->Add(Infinite, this->program2, numSparks);
+    effect->UpdatePosition = ParticleMode_UpdatePosition2;
+    effect->ResetDeadParticle = ParticleMode_Reset2;
 
     float cx = 320, cy = 240, radius = 150;
     for (int i = 0; i < numSparks; i++) {
@@ -137,34 +140,28 @@ void ParticleMode::Initialise()
         p.size = 1 + random() * 2;
         p.age = 0;
         p.lifespan = 1000 + random() * 2000;
-        this->effect2->Add(p);
+        effect->Add(p);
     }
-    
-    // Prepare effects
-    this->effect->Update(this->currentFrame);
-    this->effect2->Update(this->currentFrame);
+
+    this->engine->Update(this->currentFrame);
 }
 
 void ParticleMode::Destroy()
 {
-    delete this->effect;
     shader::DestroyProgram(this->program);
-
-    delete this->effect2;
     shader::DestroyProgram(this->program2);
+    delete this->engine;
 }
 
 void ParticleMode::Update()
 {
-    this->effect->Update(this->currentFrame);
-    this->effect2->Update(this->currentFrame);
+    this->engine->Update(this->currentFrame);
 }
 
 void ParticleMode::Render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    this->effect->Render();
-    this->effect2->Render();
+    this->engine->Render();
 }
 
 void ParticleMode::OnKeyDown(SDLKey sym, SDLMod mod, Uint16 unicode)

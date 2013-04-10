@@ -31,8 +31,7 @@ private:
 
     shader::program program2;
     GLuint uniformViewport2;
-    
-    ParticleEffect *effect;
-    ParticleEffect *effect2;
+
+    ParticleEngine *engine;
 };
 
