@@ -23,6 +23,7 @@ public:
     
     void OnKeyDown(SDLKey sym, SDLMod mod, Uint16 unicode);
     void OnKeyUp(SDLKey sym, SDLMod mod, Uint16 unicode);
+    void OnMouseMove(int x, int y, int deltaX, int deltaY);
 
     void OnResize(int w, int h);
 private:
@@ -33,5 +34,7 @@ private:
     GLuint uniformViewport2;
 
     ParticleEngine *engine;
+    int x;
+    int y;
 };
 

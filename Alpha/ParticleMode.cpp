@@ -36,7 +36,7 @@ float random() {
 	return rand() / (float) RAND_MAX;
 }
 
-void resetParticle(particle *p)
+void resetParticle(ParticleEffect* effect, particle *p)
 {
     float x = 320;
     float y = 240;
@@ -57,11 +57,11 @@ void resetParticle(particle *p)
 particle createRandomParticle()
 {
     particle p;
-    resetParticle(&p);
+    resetParticle(0, &p);
     return p;
 }
 
-void ParticleMode_UpdatePosition(particle* particle, long duration)
+void ParticleMode_UpdatePosition(ParticleEffect* effect, particle* particle, long duration)
 {
     float time = duration / 1000.0f;
     particle->position += particle->velocity * glm::vec2(time, time);
@@ -70,7 +70,7 @@ void ParticleMode_UpdatePosition(particle* particle, long duration)
     particle->velocity.y += (random()-0.5) * 5;
 }
 
-void ParticleMode_UpdatePosition2(particle* particle, long duration)
+void ParticleMode_UpdatePosition2(ParticleEffect* effect, particle* particle, long duration)
 {
     float time = duration / 1000.0f;
     particle->position += particle->velocity * glm::vec2(time, time);
@@ -82,7 +82,7 @@ void ParticleMode_UpdatePosition2(particle* particle, long duration)
     particle->velocity.y += (random() - 0.5) * 0.5;
 }
 
-void ParticleMode_Reset2(particle *p)
+void ParticleMode_Reset2(ParticleEffect* effect, particle *p)
 {
     p->age = 0;
     p->position.x += (random() - 0.5) * 5;
@@ -99,6 +99,9 @@ void ParticleMode::Initialise()
     glClearColor(0, 0, 0, 0);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    this->x = 0;
+    this->y = 0;
 
     // Create programs
     this->program = shader::LoadProgramFromFiles("shaders/particle.vert", "shaders/particle.geom", "shaders/particle_lines.frag");
@@ -119,6 +122,7 @@ void ParticleMode::Initialise()
     effect = engine->Add(Infinite, this->program, numParticles);
     effect->UpdatePosition = ParticleMode_UpdatePosition;
     effect->ResetDeadParticle = resetParticle;
+    effect->context = this;
 
     for (int i = 0; i < numParticles; i++) {
         effect->Add(createRandomParticle());
@@ -127,6 +131,7 @@ void ParticleMode::Initialise()
     effect = engine->Add(Infinite, this->program2, numSparks);
     effect->UpdatePosition = ParticleMode_UpdatePosition2;
     effect->ResetDeadParticle = ParticleMode_Reset2;
+    effect->context = this;
 
     float cx = 320, cy = 240, radius = 150;
     for (int i = 0; i < numSparks; i++) {
@@ -170,6 +175,12 @@ void ParticleMode::OnKeyDown(SDLKey sym, SDLMod mod, Uint16 unicode)
 
 void ParticleMode::OnKeyUp(SDLKey sym, SDLMod mod, Uint16 unicode)
 {
+}
+
+void ParticleMode::OnMouseMove(int x, int y, int deltaX, int deltaY)
+{
+    this->x = x;
+    this->y = y;
 }
 
 void ParticleMode::OnResize(int w, int h)

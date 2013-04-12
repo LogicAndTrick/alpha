@@ -32,10 +32,11 @@ public:
     void Update(frame f);
     void Render();
 
-    void (*ResetDeadParticle)(particle*);
-    void (*UpdatePosition)(particle*, long duration);
-    void (*UpdateColour)(particle*, long duration);
-    void (*UpdateSize)(particle*, long duration);
+    void (*ResetDeadParticle)(ParticleEffect* effect, particle*);
+    void (*UpdatePosition)(ParticleEffect* effect, particle*, long duration);
+    void (*UpdateColour)(ParticleEffect* effect, particle*, long duration);
+    void (*UpdateSize)(ParticleEffect* effect, particle*, long duration);
+    void *context;
 private:
     void Step();
 

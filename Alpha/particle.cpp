@@ -1,16 +1,16 @@
 #include "particle.h"
 
-void Particle_UpdatePositionDefault(particle* particle, long duration)
+void Particle_UpdatePositionDefault(ParticleEffect* effect, particle* particle, long duration)
 {
     float time = duration / 1000.0f;
     particle->position += particle->velocity * glm::vec2(time, time);
 }
 
-void Particle_DoNothingDefault(particle* particle, long duration)
+void Particle_DoNothingDefault(ParticleEffect* effect, particle* particle, long duration)
 {
 }
 
-void Particle_ResetNothingDefault(particle* particle)
+void Particle_ResetNothingDefault(ParticleEffect* effect, particle* particle)
 {
 }
 
@@ -93,11 +93,11 @@ void ParticleEffect::Step()
         particle *p = this->particles + i;
         p->age += this->stepDuration;
         if (p->age > p->lifespan) {
-            this->ResetDeadParticle(p);
+            this->ResetDeadParticle(this, p);
         } else {
-            this->UpdatePosition(p, this->stepDuration);
-            this->UpdateColour(p, this->stepDuration);
-            this->UpdateSize(p, this->stepDuration);
+            this->UpdatePosition(this, p, this->stepDuration);
+            this->UpdateColour(this, p, this->stepDuration);
+            this->UpdateSize(this, p, this->stepDuration);
         }
     }
 }
